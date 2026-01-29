@@ -16,7 +16,7 @@ import * as THREE from "three";
 // import { PerfMonitor } from "@/libs";
 
 // import { Perf } from "r3f-perf";
-import { PerfMonitor } from "r3f-performance";
+import { PerfMonitor } from "r3f-monitor";
 
 // ---------- Instanced Boxes ----------
 const Model = () => {

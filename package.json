@@ -15,7 +15,7 @@
     "eventemitter3": "^5.0.4",
     "leva": "^0.10.1",
     "next": "^16.1.5",
-    "r3f-performance": "^0.1.8",
+    "r3f-monitor": "^0.1.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "three": "^0.182.0",

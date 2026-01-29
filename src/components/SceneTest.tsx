@@ -1,26 +1,25 @@
-// export default Scene;
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   Bvh,
   Environment,
   OrbitControls,
   PerspectiveCamera,
-  Stats,
   useGLTF,
 } from "@react-three/drei";
 import { Leva, useControls } from "leva";
 import * as THREE from "three";
-import { PerfMonitor } from "@/libs";
+import { PerfMonitor } from "@/libs"; // Đảm bảo đường dẫn đúng
 
-// import { Perf } from "r3f-perf";
-// import { PerfMonitor } from "r3f-performance";
-
-// ---------- Instanced Boxes ----------
+// ---------- Instanced Boxes (Giữ nguyên) ----------
 const Model = () => {
   const { scene } = useGLTF("/model.glb");
+  // Log để biết khi nào Model bị hủy
+  useEffect(() => {
+    return () => console.log("🗑️ Model component unmounted");
+  }, []);
 
   return (
     <Bvh>
@@ -45,7 +44,6 @@ function BoxesInstanced() {
     color: "#8ff0ff",
   });
 
-  // 👉 Tạo random data *ngoài render*
   useEffect(() => {
     const positions = new Float32Array(count * 3);
     const scales = new Float32Array(count);
@@ -63,10 +61,8 @@ function BoxesInstanced() {
     dataRef.current = { positions, scales, count };
   }, [count, spread, size, randomScale]);
 
-  // 👉 Áp matrix cho instanced mesh
   useEffect(() => {
     if (!ref.current || !dataRef.current) return;
-
     const { positions, scales } = dataRef.current;
     const dummy = new THREE.Object3D();
 
@@ -78,7 +74,6 @@ function BoxesInstanced() {
       dummy.updateMatrix();
       ref.current.setMatrixAt(i, dummy.matrix);
     }
-
     ref.current.instanceMatrix.needsUpdate = true;
   }, [count]);
 
@@ -90,15 +85,13 @@ function BoxesInstanced() {
   );
 }
 
-// ---------- Optional: non-instanced for CPU stress ---------
-
+// ---------- Non-instanced (Giữ nguyên) ---------
 type Item = {
   key: number;
   pos: [number, number, number];
   rot: [number, number, number];
 };
 
-// PRNG deterministic (pure) - mulberry32
 function mulberry32(seed: number) {
   let t = seed >>> 0;
   return function rand() {
@@ -117,7 +110,6 @@ function BoxesNonInstanced() {
       count: { value: 300, min: 1, max: 5000, step: 1 },
       spread: { value: 60, min: 1, max: 300, step: 1 },
       size: { value: 0.8, min: 0.05, max: 5, step: 0.05 },
-      // seed để bạn bấm đổi layout "random" mà vẫn pure
       seed: { value: 12345, min: 1, max: 999999, step: 1 },
     },
   );
@@ -125,7 +117,6 @@ function BoxesNonInstanced() {
   const items = useMemo<Item[]>(() => {
     if (!enabled) return [];
     const rand = mulberry32(seed);
-
     const next: Item[] = new Array(count);
     for (let i = 0; i < count; i++) {
       const rx = rand();
@@ -133,7 +124,6 @@ function BoxesNonInstanced() {
       const rz = rand();
       const r1 = rand();
       const r2 = rand();
-
       next[i] = {
         key: i,
         pos: [
@@ -161,24 +151,13 @@ function BoxesNonInstanced() {
   );
 }
 
-// ---------- Scene ----------
-export default function Scene() {
+// ---------- Scene Content (Canvas bên trong) ----------
+function SceneContent() {
   const { background, envPreset, showGrid, shadows } = useControls("Scene", {
     background: "#ffffff",
     envPreset: {
       value: "city",
-      options: [
-        "city",
-        "sunset",
-        "dawn",
-        "night",
-        "warehouse",
-        "forest",
-        "apartment",
-        "studio",
-        "park",
-        "lobby",
-      ],
+      options: ["city", "sunset", "dawn", "night", "warehouse", "forest"],
     },
     showGrid: { value: true },
     shadows: { value: false },
@@ -199,44 +178,108 @@ export default function Scene() {
     }
   };
 
+  // Check unmount của component cha
+  useEffect(() => {
+    console.log("✅ Scene Mounted");
+    return () => {
+      console.log("❌ Scene Unmounted (Cleanup started)");
+    };
+  }, []);
+
   return (
-    <>
-      <Leva collapsed={false} />
-      <Canvas
-        onWheel={(e) => handleWheel(e.nativeEvent)}
-        style={{ width: "100vw", height: "100vh" }}
-        shadows={shadows}
-        gl={{ antialias: true }}
-        onCreated={({ scene }) => {
-          scene.background = new THREE.Color(background);
+    <Canvas
+      onWheel={(e) => handleWheel(e.nativeEvent)}
+      style={{ width: "100%", height: "100%" }}
+      shadows={shadows}
+      gl={{ antialias: true }}
+      onCreated={({ scene }) => {
+        scene.background = new THREE.Color(background);
+      }}
+    >
+      <PerfMonitor position="top-left" />
+      <Model />
+      <PerspectiveCamera ref={cameraRef} makeDefault position={[0, 40, 140]} />
+      <OrbitControls makeDefault target={[0, 0, 0]} />
+
+      <ambientLight intensity={0.35} />
+      <directionalLight
+        position={[20, 40, 10]}
+        intensity={1.2}
+        castShadow={shadows}
+      />
+
+      <Environment preset={envPreset as any} />
+
+      {showGrid && <gridHelper args={[300, 60]} />}
+
+      <Suspense fallback={null}>
+        <BoxesInstanced />
+        <BoxesNonInstanced />
+      </Suspense>
+    </Canvas>
+  );
+}
+
+// ---------- TEST PAGE (Component chính) ----------
+export default function TestPage() {
+  const [mounted, setMounted] = useState(true);
+
+  return (
+    <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
+      {/* Nút điều khiển Unmount */}
+      <div
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          zIndex: 9999,
+          background: "rgba(0,0,0,0.8)",
+          padding: "20px",
+          borderRadius: "8px",
+          color: "white",
         }}
       >
-        {/* <Stats /> */}
-        <PerfMonitor position="top-left" deepAnalyze />
-        <Model />
-        <PerspectiveCamera
-          ref={cameraRef}
-          makeDefault
-          position={[0, 40, 140]}
-        />
-        <OrbitControls makeDefault target={[0, 0, 0]} />
+        <h3>Memory Leak Test</h3>
+        <button
+          onClick={() => setMounted(!mounted)}
+          style={{
+            padding: "10px 20px",
+            background: mounted ? "#ff4444" : "#44ff44",
+            color: mounted ? "white" : "black",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: "16px",
+          }}
+        >
+          {mounted ? "UNMOUNT SCENE (Kill)" : "MOUNT SCENE"}
+        </button>
+        <p style={{ fontSize: "12px", marginTop: "10px", color: "#ccc" }}>
+          Bật Console (F12) để xem log: <br />
+          1. Xem "Zombie check" có chạy tiếp không. <br />
+          2. Xem "GLPerf has been disposed" có hiện không.
+        </p>
+      </div>
 
-        <ambientLight intensity={0.35} />
-        <directionalLight
-          position={[20, 40, 10]}
-          intensity={1.2}
-          castShadow={shadows}
-        />
-
-        <Environment preset={envPreset as any} />
-
-        {showGrid && <gridHelper args={[300, 60]} />}
-
-        <Suspense fallback={null}>
-          <BoxesInstanced />
-          <BoxesNonInstanced />
-        </Suspense>
-      </Canvas>
-    </>
+      {mounted && <Leva collapsed={false} />}
+      {mounted ? (
+        <SceneContent />
+      ) : (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "#222",
+            color: "#666",
+          }}
+        >
+          <h2>Scene is Unmounted. Check Console.</h2>
+        </div>
+      )}
+    </div>
   );
 }

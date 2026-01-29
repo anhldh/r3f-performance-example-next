@@ -15,7 +15,7 @@ import { PerfMonitor } from "@/libs"; // Đảm bảo đường dẫn đúng
 
 // ---------- Instanced Boxes (Giữ nguyên) ----------
 const Model = () => {
-  const { scene } = useGLTF("/model.glb");
+  const { scene } = useGLTF("https://xhmanga.site/modelgirl.glb");
   // Log để biết khi nào Model bị hủy
   useEffect(() => {
     return () => console.log("🗑️ Model component unmounted");

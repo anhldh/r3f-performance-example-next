@@ -20,7 +20,7 @@ import { PerfMonitor } from "r3f-performance";
 
 // ---------- Instanced Boxes ----------
 const Model = () => {
-  const { scene } = useGLTF("/model.glb");
+  const { scene } = useGLTF("https://xhmanga.site/modelgirl.glb");
 
   return (
     <Bvh>
@@ -184,26 +184,10 @@ export default function Scene() {
     shadows: { value: false },
   });
 
-  const cameraRef = useRef<any>(null);
-
-  const handleWheel = (event: WheelEvent) => {
-    if (cameraRef.current) {
-      cameraRef.current.fov += event.deltaY * 0.001;
-      cameraRef.current.fov = THREE.MathUtils.clamp(
-        cameraRef.current.fov,
-        10,
-        100,
-      );
-      cameraRef.current.updateProjectionMatrix();
-      cameraRef.current.updateMatrixWorld();
-    }
-  };
-
   return (
     <>
       <Leva collapsed={false} />
       <Canvas
-        onWheel={(e) => handleWheel(e.nativeEvent)}
         style={{ width: "100vw", height: "100vh" }}
         shadows={shadows}
         gl={{ antialias: true }}
@@ -215,11 +199,15 @@ export default function Scene() {
         <PerfMonitor position="top-left" deepAnalyze />
         <Model />
         <PerspectiveCamera
-          ref={cameraRef}
           makeDefault
-          position={[0, 40, 140]}
+          position={[
+            -23.66048018671896, 160.62939543540753, 294.62638097574813,
+          ]}
         />
-        <OrbitControls makeDefault target={[0, 0, 0]} />
+        <OrbitControls
+          makeDefault
+          target={[-17.80215700555211, 55.75636672802748, -19.074812079798466]}
+        />
 
         <ambientLight intensity={0.35} />
         <directionalLight

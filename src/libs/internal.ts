@@ -156,7 +156,6 @@ export class GLPerf {
    * @param { any | undefined } now
    */
   nextFrame(now: any) {
-    console.log("👻 Zombie check: Frame ID", this.frameId);
     this.frameId++;
     const t = now || this.now();
     const duration = t - this.paramTime;
@@ -198,13 +197,6 @@ export class GLPerf {
             "cpu-started",
             "cpu-finished",
           );
-
-          // const measures = window.performance.getEntriesByType("measure");
-          // const marks = window.performance.getEntriesByType("mark");
-
-          // console.log(
-          //   `[Leak Check] Measures: ${measures.length}, Marks: ${marks.length}`,
-          // );
           // fix cpuMeasure return null in ios
           this.currentCpu = cpuMeasure?.duration || 0;
 
@@ -433,8 +425,9 @@ export class GLPerf {
     // Clean up Performance Marks and Measures
     if (window.performance) {
       try {
-        window.performance.clearMarks();
-        window.performance.clearMeasures();
+        performance.clearMarks("cpu-started");
+        performance.clearMarks("cpu-finished");
+        performance.clearMeasures("cpu-duration");
       } catch (e) {}
     }
 
@@ -451,10 +444,5 @@ export class GLPerf {
     this.cpuChart = [];
     this.memChart = [];
     this.names = [];
-
-    // 5. Disconnect Global (To allow Garbage Collector to clean up this Class)
-    if (window.GLPerf) {
-      window.GLPerf = null;
-    }
   }
 }

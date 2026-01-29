@@ -13,10 +13,10 @@ import {
 } from "@react-three/drei";
 import { Leva, useControls } from "leva";
 import * as THREE from "three";
-import { PerfMonitor } from "@/libs";
+// import { PerfMonitor } from "@/libs";
 
 // import { Perf } from "r3f-perf";
-// import { PerfMonitor } from "r3f-performance";
+import { PerfMonitor } from "r3f-performance";
 
 // ---------- Instanced Boxes ----------
 const Model = () => {

@@ -86,6 +86,7 @@ const ChartCurve: FC<PerfUIProps> = ({
   return (
     <>
       <line
+        // @ts-ignore
         onUpdate={(self: any) => {
           self.updateMatrix();
           matriceCount.value -= 1;
@@ -111,6 +112,7 @@ const ChartCurve: FC<PerfUIProps> = ({
         />
       </line>
       <line
+        // @ts-ignore
         onUpdate={(self: any) => {
           self.updateMatrix();
           matriceCount.value -= 1;
@@ -131,6 +133,7 @@ const ChartCurve: FC<PerfUIProps> = ({
         <lineBasicMaterial color={colorsGraph.gpu} transparent opacity={0.5} />
       </line>
       <line
+        // @ts-ignore
         onUpdate={(self: any) => {
           self.updateMatrix();
           matriceCount.value -= 1;

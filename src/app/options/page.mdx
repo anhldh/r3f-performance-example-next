@@ -1,0 +1,111 @@
+---
+title: Options & API
+---
+
+# Options & API
+
+## Component Props
+
+```ts
+interface PerfProps {
+  logsPerSecond?: number;
+  overClock?: boolean;
+  matrixUpdate?: boolean;
+  deepAnalyze?: boolean;
+  showGraph?: boolean;
+  graphType?: "line" | "bar";
+  minimal?: boolean;
+  antialias?: boolean;
+  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  displayType?: "tab" | "classic";
+  chart?: {
+    hz?: number;
+    length?: number;
+  };
+}
+```
+
+---
+
+## logsPerSecond
+
+Control how often the monitor refreshes metrics.
+
+```tsx
+<PerfMonitor logsPerSecond={20} />
+```
+
+---
+
+## overClock
+
+Disable monitor refresh limit to benchmark raw FPS.
+
+```tsx
+<PerfMonitor overClock />
+```
+
+---
+
+## deepAnalyze
+
+Enable detailed WebGL program inspection.
+
+```tsx
+<PerfMonitor deepAnalyze />
+```
+
+---
+
+## matrixUpdate
+
+Count matrixWorld updates per frame
+
+```tsx
+<PerfMonitor matrixUpdate />
+```
+
+---
+
+## minimal
+
+Compact condensed view.
+
+```tsx
+<PerfMonitor minimal />
+```
+
+---
+
+## showGraph
+
+Toggle performance graphs - default: true
+
+```tsx
+<PerfMonitor showGraph={true} />
+```
+
+---
+
+## graphType
+
+Graph style (default: "bar")
+
+```tsx
+<PerfMonitor graphType="bar" />
+```
+
+---
+
+## chart
+
+Configure graph behaviour.
+
+```tsx
+<PerfMonitor
+  chart={{
+    hz: 60,
+    length: 200,
+  }}
+/>
+```

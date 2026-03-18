@@ -1,0 +1,29 @@
+---
+title: Display Modes
+---
+
+import { Tabs } from "nextra/components";
+import DisplayPreview from "@/components/DisplayPreview";
+
+# Display Modes
+
+### Preview
+
+<DisplayPreview />
+
+<Tabs items={["Code", "Notes"]}>
+  <Tabs.Tab>
+```tsx copy
+<PerfMonitor displayType="tab" />
+<PerfMonitor displayType="classic" />
+```
+</Tabs.Tab>
+<Tabs.Tab>
+
+Tab: structured debugging UI
+
+Classic: compact overlay panel
+
+</Tabs.Tab>
+
+</Tabs>

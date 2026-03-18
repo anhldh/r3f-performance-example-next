@@ -1,0 +1,73 @@
+import { Tabs } from "nextra/components";
+
+# R3F Monitor
+
+An advanced, easy-to-use performance monitoring tool for **@react-three/fiber** applications.
+
+Add the `<PerfMonitor />` component anywhere in your R3F Canvas.
+
+---
+
+## 🚀 Installation
+
+{/* prettier-ignore */}
+<Tabs items={["npm", "yarn", "pnpm", "bun"]}>
+  <Tabs.Tab>
+  ```bash copy
+  npm install r3f-monitor 
+  ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ``` bash copy 
+  yarn add r3f-monitor 
+  ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ``` bash copy 
+  pnpm add r3f-monitor 
+  ```
+  </Tabs.Tab>
+    <Tabs.Tab>
+  ``` bash copy 
+  bun install r3f-monitor 
+  ```
+  </Tabs.Tab>
+</Tabs>
+
+---
+
+## 🛠 Basic Usage
+
+```tsx filename="App.tsx" copy
+import { Canvas } from "@react-three/fiber";
+import { PerfMonitor } from "r3f-monitor";
+
+export default function App() {
+  return (
+    <Canvas>
+      <PerfMonitor />
+    </Canvas>
+  );
+}
+```
+
+## 🧪 Example
+
+Live example:
+👉 https://codesandbox.io/p/sandbox/3sqpy4
+
+//
+
+<iframe
+  src="https://codesandbox.io/embed/3sqpy4?view=preview"
+  style={{
+    width: "100%",
+    height: "600px",
+    border: 0,
+    borderRadius: "4px",
+    overflow: "hidden",
+  }}
+  title="R3F - Monitor Performance"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+></iframe>
